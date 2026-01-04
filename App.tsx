@@ -53,7 +53,7 @@ const App: React.FC = () => {
       case AppView.DASHBOARD: return <Dashboard setView={setCurrentView} />;
       case AppView.IDENTITY: return <IdentityVault />;
       case AppView.GROUPS: return <GroupManager />;
-      case AppView.CHATBOT: return <Chatbot />;
+      case AppView.CHATBOT: return <Chatbot location={location} />;
       case AppView.VISION: return <VisionAI />;
       case AppView.WALKIE_TALKIE: return <WalkieTalkie />;
       default: return <Dashboard setView={setCurrentView} />;

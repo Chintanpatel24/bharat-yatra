@@ -5,6 +5,7 @@ const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 /**
  * Standard Chat using Gemini 3 Pro for complex reasoning.
+ * Uses thinkingConfig for higher quality responses.
  */
 export const chatWithPro = async (message: string, history: any[] = []) => {
   const ai = getAI();
@@ -15,7 +16,8 @@ export const chatWithPro = async (message: string, history: any[] = []) => {
       { role: 'user', parts: [{ text: message }] }
     ],
     config: {
-      systemInstruction: 'You are the Bharat Yatra Pro Assistant. You provide deep, complex insights into Indian culture, travel planning, and legal/safety advice. Be thorough and highly accurate.',
+      systemInstruction: 'You are the Bharat Yatra Pro Assistant. You provide deep, complex insights into Indian culture, travel planning, and legal/safety advice. Use your reasoning capabilities to provide highly detailed and accurate responses.',
+      thinkingConfig: { thinkingBudget: 16384 }
     },
   });
   return { text: response.text };
@@ -32,7 +34,7 @@ export const chatWithSearch = async (message: string) => {
     contents: [{ role: 'user', parts: [{ text: message }] }],
     config: {
       tools: [{ googleSearch: {} }],
-      systemInstruction: 'You are the Bharat Yatra Real-Time Safety & Advisories Assistant. Your absolute priority is the safety and well-being of tourists in India. Use Google Search to find and prioritize critical real-time information, including safety alerts, weather warnings, natural disaster updates, and official travel advisories. If a threat or risk exists, lead with that information clearly. Always provide actionable advice and cite your sources via grounding links.',
+      systemInstruction: 'You are the Bharat Yatra Real-Time Safety & Advisories Assistant. Your absolute priority is the safety and well-being of tourists in India. Use Google Search to find and prioritize critical real-time information, including safety alerts, weather warnings, natural disaster updates, and official travel advisories. Always provide actionable advice and cite your sources.',
     },
   });
 
