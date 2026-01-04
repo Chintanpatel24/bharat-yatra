@@ -6,7 +6,8 @@ export enum AppView {
   CHATBOT = 'chatbot',
   VISION = 'vision',
   WALKIE_TALKIE = 'walkie-talkie',
-  SETTINGS = 'settings'
+  SETTINGS = 'settings',
+  GALLERY = 'gallery'
 }
 
 export interface User {
@@ -43,4 +44,12 @@ export interface LandmarkAnalysis {
   description: string;
   historicalFacts: string[];
   safetyTips: string[];
+}
+
+export interface GalleryItem {
+  id: string;
+  title: string;
+  location: string;
+  image: string;
+  description: string;
 }

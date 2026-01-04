@@ -13,7 +13,8 @@ import {
   X,
   AlertTriangle,
   CircleUser,
-  LayoutDashboard
+  LayoutDashboard,
+  Image as ImageIcon
 } from 'lucide-react';
 import { AppView } from './types';
 import Dashboard from './components/Dashboard';
@@ -24,6 +25,7 @@ import VisionAI from './components/VisionAI';
 import WalkieTalkie from './components/WalkieTalkie';
 import SOSOverlay from './components/SOSOverlay';
 import Settings from './components/Settings';
+import Gallery from './components/Gallery';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
@@ -40,17 +42,18 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Primary navigation - Items 1, 2, 4 in the bottom bar (Item 3 is Walkie-Talkie, SOS is central)
+  // Primary navigation (Bottom Bar / Main Sidebar)
   const primaryNav = [
     { id: AppView.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
     { id: AppView.IDENTITY, label: 'Verified', icon: User },
-    // SOS is handled separately as a central action in the mobile bar
+    // SOS central in mobile
     { id: AppView.WALKIE_TALKIE, label: 'Walkie-Talkie', icon: Radio },
     { id: AppView.CHATBOT, label: 'AI Chat', icon: MessageSquare },
   ];
 
-  // Overflow navigation - Groups, Vision AI, Settings
+  // Overflow navigation (In the "Three Lines" menu)
   const overflowNav = [
+    { id: AppView.GALLERY, label: 'Gallery', icon: ImageIcon },
     { id: AppView.GROUPS, label: 'Groups', icon: Users },
     { id: AppView.VISION, label: 'Vision AI', icon: Camera },
     { id: AppView.SETTINGS, label: 'Settings', icon: SettingsIcon },
@@ -65,6 +68,7 @@ const App: React.FC = () => {
       case AppView.VISION: return <VisionAI />;
       case AppView.WALKIE_TALKIE: return <WalkieTalkie />;
       case AppView.SETTINGS: return <Settings />;
+      case AppView.GALLERY: return <Gallery />;
       default: return <Dashboard setView={setCurrentView} />;
     }
   };
@@ -203,13 +207,14 @@ const App: React.FC = () => {
               </button>
             </div>
             
-            <nav className="flex-1 space-y-3">
+            <nav className="flex-1 space-y-3 overflow-y-auto">
+              <p className="px-4 mb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">More Tools</p>
               {overflowNav.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => { setCurrentView(item.id); setIsMenuOpen(false); }}
                   className={`w-full flex items-center gap-5 px-6 py-4 rounded-2xl text-[16px] font-bold transition-all ${
-                    currentView === item.id ? 'bg-orange-50 text-orange-600' : 'text-slate-600 hover:bg-slate-50'
+                    currentView === item.id ? 'bg-orange-50 text-orange-600 shadow-sm' : 'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   <item.icon className="w-6 h-6" />

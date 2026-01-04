@@ -1,13 +1,28 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Standard initialization using the environment-injected API key
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-/**
- * Standard Chat using Gemini 3 Pro for deep reasoning.
- * Optimized for complex travel and safety logic.
- */
+const BHARAT_YATRA_SYSTEM_INSTRUCTION = `
+You are an AI assistant used in a web application named "Bharat Yatra".
+Purpose: Provide accurate, practical, and real-world travel guidance related to India.
+Scope:
+- Tourist destinations across India
+- Travel routes, distances, and transport options
+- Budget estimation and realistic timelines
+- Safety advice and local tips
+- Cultural and historical context when relevant
+
+Rules:
+1. Be honest and practical. Do not exaggerate.
+2. Keep answers clear and concise.
+3. If information is uncertain, say so.
+4. Avoid marketing language.
+5. NO EMOJIS.
+6. Assume users are Indian travelers unless specified otherwise.
+If a question is unrelated to Indian travel or tourism, politely redirect the user.
+`;
+
 export const chatWithPro = async (message: string, history: any[] = []) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
@@ -17,17 +32,13 @@ export const chatWithPro = async (message: string, history: any[] = []) => {
       { role: 'user', parts: [{ text: message }] }
     ],
     config: {
-      systemInstruction: 'You are the Bharat Yatra Pro Assistant. You provide deep, complex insights into Indian culture, travel planning, and legal/safety advice. Use your reasoning capabilities to provide highly detailed and accurate responses.',
-      thinkingConfig: { thinkingBudget: 32768 } // Max budget for pro model reasoning
+      systemInstruction: BHARAT_YATRA_SYSTEM_INSTRUCTION,
+      thinkingConfig: { thinkingBudget: 0 } // Faster responses for general chat
     },
   });
   return { text: response.text };
 };
 
-/**
- * Search Grounded Chat using Gemini 3 Flash.
- * Essential for real-time safety updates.
- */
 export const chatWithSearch = async (message: string) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
@@ -35,7 +46,7 @@ export const chatWithSearch = async (message: string) => {
     contents: [{ role: 'user', parts: [{ text: message }] }],
     config: {
       tools: [{ googleSearch: {} }],
-      systemInstruction: 'You are the Bharat Yatra Real-Time Safety Assistant. Your priority is user safety. Use Google Search to find critical real-time info (weather, safety, news) and cite sources.',
+      systemInstruction: BHARAT_YATRA_SYSTEM_INSTRUCTION,
     },
   });
 
@@ -46,9 +57,6 @@ export const chatWithSearch = async (message: string) => {
   };
 };
 
-/**
- * Maps Grounded Chat using Gemini 2.5 Flash.
- */
 export const chatWithMaps = async (message: string, lat?: number, lng?: number) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
@@ -61,6 +69,7 @@ export const chatWithMaps = async (message: string, lat?: number, lng?: number) 
           latLng: lat && lng ? { latitude: lat, longitude: lng } : undefined
         }
       },
+      systemInstruction: BHARAT_YATRA_SYSTEM_INSTRUCTION,
     },
   });
 
@@ -71,12 +80,9 @@ export const chatWithMaps = async (message: string, lat?: number, lng?: number) 
   };
 };
 
-/**
- * Landmark Analysis using Vision capabilities.
- */
 export const analyzeLandmark = async (base64Image: string) => {
   const ai = getAI();
-  const prompt = "Identify this monument or landmark in India. Provide name, description, 3 history facts, 2 safety tips. Return JSON.";
+  const prompt = "Identify this Indian monument. Return JSON with name, description, historicalFacts, and safetyTips. NO EMOJIS in description.";
 
   const response = await ai.models.generateContent({
     model: 'gemini-3-pro-preview',
